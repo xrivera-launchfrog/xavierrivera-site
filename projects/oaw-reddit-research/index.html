@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills-Based Hiring Sentiment Analysis — Xavier Rivera</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1a1a2e;
+            background: #fafafa;
+            line-height: 1.7;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 48px 24px; }
+        .back { color: #4C78A8; text-decoration: none; font-size: 0.9rem; }
+        .back:hover { text-decoration: underline; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 24px 0 8px; }
+        .meta { color: #666; font-size: 0.95rem; margin-bottom: 32px; }
+        h2 { font-size: 1.2rem; font-weight: 600; margin: 32px 0 12px; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
+        p { margin-bottom: 16px; color: #333; }
+        .samples-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0 32px;
+        }
+        @media (max-width: 600px) { .samples-grid { grid-template-columns: 1fr; } }
+        .sample-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .sample-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .sample-card p { color: #555; font-size: 0.9rem; margin-bottom: 10px; }
+        .sample-card a {
+            color: #4C78A8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .sample-card a:hover { text-decoration: underline; }
+        .tag {
+            display: inline-block;
+            background: #f0f2f6;
+            color: #444;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        .dashboard-frame {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .note {
+            background: #f8f9fb;
+            border-left: 3px solid #4C78A8;
+            padding: 12px 16px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: #444;
+        }
+        footer { margin-top: 48px; color: #888; font-size: 0.85rem; border-top: 1px solid #e0e0e0; padding-top: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">&larr; Back to home</a>
+
+        <h1>Skills-Based Hiring Sentiment Analysis</h1>
+        <p class="meta">Reddit Discourse Analysis for Opportunity@Work &middot; Xavier Rivera &middot; 2025</p>
+
+        <h2>My Role & Outcomes</h2>
+        <p>As sole data generalist on this research initiative, I designed and executed the full project lifecycle: scoping the research question, building data collection infrastructure (Reddit API + Pushshift), developing a reproducible cleaning pipeline, and delivering an interactive dashboard for stakeholders. The project analyzed public discourse across eight subreddits to map sentiment around skills-based hiring reform and its intersection with federal workforce changes.</p>
+        <p>The analysis produced three actionable findings: (1) sentiment toward skills-based hiring is broadly positive but drops in RIF-adjacent threads, informing communications strategy; (2) r/FedEmployees and r/jobs are the highest-volume channels, making them monitoring priorities; (3) mentions of "STARs" and "skills-based" have trended upward since mid-2023, indicating growing public awareness of Opportunity@Work's mission.</p>
+
+        <h2>Work Samples</h2>
+        <div class="samples-grid">
+            <div class="sample-card">
+                <h3>1. Project Plan & Task Tracker</h3>
+                <p>Structured research plan with timeline, risk register, and task-level tracking across 4 workstreams.</p>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/project_plan.md" target="_blank">View project plan &rarr;</a><br>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/task_tracker.tsv" target="_blank">View task tracker &rarr;</a>
+            </div>
+            <div class="sample-card">
+                <h3>2. Survey Design</h3>
+                <p>Teacher PD effectiveness survey — 17 questions with skip logic, Likert scales, and implementation notes.</p>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/survey/teacher_pd_survey.md" target="_blank">View survey &rarr;</a>
+            </div>
+            <div class="sample-card">
+                <h3>3. Consent & Incentive Tracking</h3>
+                <p>IRB-aligned consent workflow and incentive distribution log with 15 tracked participants.</p>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/operations/consent_tracking.md" target="_blank">View consent protocol &rarr;</a><br>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/operations/incentive_distribution.tsv" target="_blank">View incentive log &rarr;</a>
+            </div>
+            <div class="sample-card">
+                <h3>4. Cleaned Dataset & Dashboard</h3>
+                <p>491-row cleaned dataset with data dictionary, plus interactive Streamlit dashboard with 5 chart sections.</p>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/data/DATA_DICTIONARY.md" target="_blank">View data dictionary &rarr;</a><br>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/scripts/clean_data.py" target="_blank">View cleaning pipeline &rarr;</a>
+            </div>
+        </div>
+
+        <h2>Technical Stack</h2>
+        <div style="margin-bottom: 24px;">
+            <span class="tag">Python</span>
+            <span class="tag">pandas</span>
+            <span class="tag">NumPy</span>
+            <span class="tag">Altair</span>
+            <span class="tag">Streamlit</span>
+            <span class="tag">TextBlob</span>
+            <span class="tag">PRAW</span>
+            <span class="tag">Pushshift</span>
+        </div>
+
+        <h2>Live Dashboard</h2>
+        <div class="note">
+            The dashboard below is password-protected. Enter the password shared with you to view the interactive charts.
+            If the embed doesn't load, <a href="https://oaw-reddit-research.streamlit.app" target="_blank">open the dashboard directly</a>.
+        </div>
+        <iframe
+            src="https://oaw-reddit-research.streamlit.app/?embedded=true"
+            class="dashboard-frame"
+            title="Skills-Based Hiring Sentiment Dashboard"
+            allow="clipboard-write"
+        ></iframe>
+
+        <footer>
+            <p>Xavier Rivera &middot; <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research" style="color:#4C78A8; text-decoration:none;">View source on GitHub</a></p>
+        </footer>
+    </div>
+</body>
+</html>

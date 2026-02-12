@@ -4,136 +4,601 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skills-Based Hiring Sentiment Analysis — Xavier Rivera</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        html { font-size: 10px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { color: #f62506; background: none; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #1a1a2e;
-            background: #fafafa;
-            line-height: 1.7;
+            font-family: 'Inter', sans-serif;
+            color: #000;
+            background: #f1f1f0;
+            overflow: hidden;
+            height: 100vh;
         }
-        .container { max-width: 800px; margin: 0 auto; padding: 48px 24px; }
-        .back { color: #4C78A8; text-decoration: none; font-size: 0.9rem; }
-        .back:hover { text-decoration: underline; }
-        h1 { font-size: 1.8rem; font-weight: 700; margin: 24px 0 8px; }
-        .meta { color: #666; font-size: 0.95rem; margin-bottom: 32px; }
-        h2 { font-size: 1.2rem; font-weight: 600; margin: 32px 0 12px; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
-        p { margin-bottom: 16px; color: #333; }
-        .samples-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 16px 0 32px;
+
+        /* ── Fixed Nav ─────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.4rem;
+            mix-blend-mode: difference;
+            color: #fff;
         }
-        @media (max-width: 600px) { .samples-grid { grid-template-columns: 1fr; } }
-        .sample-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        .sample-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-        .sample-card p { color: #555; font-size: 0.9rem; margin-bottom: 10px; }
-        .sample-card a {
-            color: #4C78A8;
+        nav a {
+            color: inherit;
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
+            opacity: 0.6;
+            transition: opacity 0.2s;
         }
-        .sample-card a:hover { text-decoration: underline; }
-        .tag {
+        nav a:hover { opacity: 1; }
+        .nav-links { display: flex; gap: 20px; }
+
+        /* ── Scroll Progress ───────────────────────────── */
+        .progress {
+            position: fixed;
+            bottom: 30px; left: 40px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            opacity: 0.3;
+            z-index: 100;
+            mix-blend-mode: difference;
+            color: #fff;
+        }
+
+        /* ── Horizontal Track ──────────────────────────── */
+        .track {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            height: 100vh;
+            will-change: transform;
+            transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        /* ── Panels ────────────────────────────────────── */
+        .panel {
+            flex-shrink: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 80px;
+        }
+
+        /* Title Panel */
+        .panel-title {
+            width: 100vw;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+        .panel-title h1 {
+            font-size: 5.5rem;
+            font-weight: 300;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            max-width: 800px;
+        }
+        .panel-title .meta {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.3rem;
+            opacity: 0.4;
+            margin-top: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            opacity: 0.3;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Overview Panel */
+        .panel-overview {
+            width: 120vw;
+            gap: 100px;
+        }
+        .panel-overview .col-heading {
+            flex: 0 0 300px;
+        }
+        .panel-overview .col-heading h2 {
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .panel-overview .col-heading .label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            margin-bottom: 16px;
+        }
+        .panel-overview .col-body {
+            max-width: 500px;
+            font-size: 1.6rem;
+            line-height: 2.6rem;
+            font-weight: 400;
+        }
+        .panel-overview .col-body p { margin-bottom: 2rem; }
+
+        /* Challenge Panel */
+        .panel-challenge {
+            width: 100vw;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+        .panel-challenge .label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            margin-bottom: 40px;
+        }
+        .panel-challenge blockquote {
+            font-size: 3.2rem;
+            font-weight: 300;
+            line-height: 1.4;
+            max-width: 700px;
+            letter-spacing: -0.01em;
+        }
+
+        /* Process Panel */
+        .panel-process {
+            width: 140vw;
+            gap: 80px;
+        }
+        .process-section { flex: 1; max-width: 400px; }
+        .process-section .label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            margin-bottom: 16px;
+        }
+        .process-section h3 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+        .process-section p {
+            font-size: 1.5rem;
+            line-height: 2.4rem;
+            opacity: 0.7;
+            margin-bottom: 16px;
+        }
+        .stat-row {
+            display: flex;
+            gap: 40px;
+            margin-top: 32px;
+        }
+        .stat { text-align: left; }
+        .stat-number {
+            font-size: 3.6rem;
+            font-weight: 300;
+            line-height: 1;
+        }
+        .stat-label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.1rem;
+            opacity: 0.4;
+            margin-top: 6px;
+        }
+        .tech-list {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.3rem;
+            font-style: italic;
+            opacity: 0.5;
+            margin-top: 20px;
+        }
+
+        /* Work Samples Panel */
+        .panel-samples {
+            width: 140vw;
+            gap: 60px;
+        }
+        .samples-heading {
+            flex: 0 0 240px;
+        }
+        .samples-heading h2 {
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1.2;
+        }
+        .samples-heading .label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            margin-bottom: 16px;
+        }
+        .sample-items {
+            display: flex;
+            gap: 50px;
+            align-items: flex-start;
+        }
+        .sample-item { max-width: 220px; }
+        .sample-num {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            opacity: 0.3;
+            margin-bottom: 8px;
+        }
+        .sample-item h4 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .sample-item p {
+            font-size: 1.3rem;
+            line-height: 2rem;
+            opacity: 0.5;
+            margin-bottom: 12px;
+        }
+        .sample-item a {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(0,0,0,0.3);
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .sample-item a:hover { opacity: 1; }
+
+        /* Findings Panel */
+        .panel-findings {
+            width: 120vw;
+            flex-direction: column;
+            justify-content: center;
+            gap: 50px;
+            padding-left: 120px;
+        }
+        .panel-findings .label {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+        }
+        .finding {
+            max-width: 600px;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        .finding-num {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.4rem;
+            opacity: 0.3;
+            flex-shrink: 0;
+            padding-top: 4px;
+        }
+        .finding p {
+            font-size: 2rem;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* CTA Panel */
+        .panel-cta {
+            width: 100vw;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+        .panel-cta h2 {
+            font-size: 3.6rem;
+            font-weight: 300;
+            margin-bottom: 24px;
+        }
+        .panel-cta .cta-link {
             display: inline-block;
-            background: #f0f2f6;
-            color: #444;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            margin-right: 6px;
-            margin-bottom: 4px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.6rem;
+            color: #000;
+            text-decoration: none;
+            border: 1px solid #000;
+            border-radius: 40px;
+            padding: 16px 40px;
+            opacity: 0.7;
+            transition: opacity 0.2s, background 0.3s;
         }
-        .dashboard-frame {
-            width: 100%;
-            height: 700px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+        .panel-cta .cta-link:hover {
+            opacity: 1;
+            background: rgba(0,0,0,0.05);
+        }
+        .panel-cta .cta-note {
+            font-size: 1.3rem;
+            opacity: 0.4;
             margin-top: 16px;
         }
-        .note {
-            background: #f8f9fb;
-            border-left: 3px solid #4C78A8;
-            padding: 12px 16px;
-            margin: 16px 0;
-            font-size: 0.9rem;
-            color: #444;
+
+        /* Footer Panel */
+        .panel-footer {
+            width: 60vw;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
         }
-        footer { margin-top: 48px; color: #888; font-size: 0.85rem; border-top: 1px solid #e0e0e0; padding-top: 24px; }
+        .panel-footer h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+        .panel-footer .links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.3rem;
+        }
+        .panel-footer a {
+            color: #000;
+            text-decoration: none;
+            opacity: 0.4;
+            border-bottom: 1px dotted rgba(0,0,0,0.3);
+            transition: opacity 0.2s;
+        }
+        .panel-footer a:hover { opacity: 1; }
+
+        /* ── Mobile: vertical fallback ─────────────────── */
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .track {
+                flex-direction: column;
+                height: auto;
+                transition: none;
+                transform: none !important;
+            }
+            .panel {
+                width: 100vw !important;
+                height: auto;
+                min-height: 100vh;
+                padding: 100px 24px 60px;
+                flex-direction: column;
+                gap: 40px;
+            }
+            .panel-title h1 { font-size: 3.2rem; }
+            .panel-overview .col-heading h2 { font-size: 2.8rem; }
+            .panel-overview .col-heading { flex: 0 0 auto; }
+            .panel-challenge blockquote { font-size: 2.2rem; }
+            .process-section h3 { font-size: 2rem; }
+            .stat-row { gap: 24px; }
+            .stat-number { font-size: 2.6rem; }
+            .samples-heading h2 { font-size: 2.8rem; }
+            .sample-items { flex-direction: column; gap: 32px; }
+            .panel-findings { padding-left: 24px; }
+            .finding p { font-size: 1.6rem; }
+            .panel-cta h2 { font-size: 2.6rem; }
+            nav { position: relative; mix-blend-mode: normal; color: #000; }
+            .progress { display: none; }
+            .scroll-hint { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="back">&larr; Back to home</a>
 
-        <h1>Skills-Based Hiring Sentiment Analysis</h1>
-        <p class="meta">Reddit Discourse Analysis for Opportunity@Work &middot; Xavier Rivera &middot; 2025</p>
-
-        <h2>My Role & Outcomes</h2>
-        <p>As sole data generalist on this research initiative, I designed and executed the full project lifecycle: scoping the research question, building data collection infrastructure (Reddit API + Pushshift), developing a reproducible cleaning pipeline, and delivering an interactive dashboard for stakeholders. The project analyzed public discourse across eight subreddits to map sentiment around skills-based hiring reform and its intersection with federal workforce changes.</p>
-        <p>The analysis produced three actionable findings: (1) sentiment toward skills-based hiring is broadly positive but drops in RIF-adjacent threads, informing communications strategy; (2) r/FedEmployees and r/jobs are the highest-volume channels, making them monitoring priorities; (3) mentions of "STARs" and "skills-based" have trended upward since mid-2023, indicating growing public awareness of Opportunity@Work's mission.</p>
-
-        <h2>Work Samples</h2>
-        <div class="samples-grid">
-            <div class="sample-card">
-                <h3>1. Project Plan & Task Tracker</h3>
-                <p>Structured research plan with timeline, risk register, and task-level tracking across 4 workstreams.</p>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/project_plan.md" target="_blank">View project plan &rarr;</a><br>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/task_tracker.tsv" target="_blank">View task tracker &rarr;</a>
-            </div>
-            <div class="sample-card">
-                <h3>2. Survey Design</h3>
-                <p>Teacher PD effectiveness survey — 17 questions with skip logic, Likert scales, and implementation notes.</p>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/survey/teacher_pd_survey.md" target="_blank">View survey &rarr;</a>
-            </div>
-            <div class="sample-card">
-                <h3>3. Consent & Incentive Tracking</h3>
-                <p>IRB-aligned consent workflow and incentive distribution log with 15 tracked participants.</p>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/operations/consent_tracking.md" target="_blank">View consent protocol &rarr;</a><br>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/operations/incentive_distribution.tsv" target="_blank">View incentive log &rarr;</a>
-            </div>
-            <div class="sample-card">
-                <h3>4. Cleaned Dataset & Dashboard</h3>
-                <p>491-row cleaned dataset with data dictionary, plus interactive Streamlit dashboard with 5 chart sections.</p>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/data/DATA_DICTIONARY.md" target="_blank">View data dictionary &rarr;</a><br>
-                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/scripts/clean_data.py" target="_blank">View cleaning pipeline &rarr;</a>
-            </div>
+    <nav>
+        <a href="/">xavierrivera</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research" target="_blank">Source</a>
         </div>
+    </nav>
 
-        <h2>Technical Stack</h2>
-        <div style="margin-bottom: 24px;">
-            <span class="tag">Python</span>
-            <span class="tag">pandas</span>
-            <span class="tag">NumPy</span>
-            <span class="tag">Altair</span>
-            <span class="tag">Streamlit</span>
-            <span class="tag">TextBlob</span>
-            <span class="tag">PRAW</span>
-            <span class="tag">Pushshift</span>
-        </div>
+    <div class="progress" id="progress">01 / 08</div>
 
-        <h2>Live Dashboard</h2>
-        <div class="note">
-            The dashboard below is password-protected. Enter the password shared with you to view the interactive charts.
-            If the embed doesn't load, <a href="https://oaw-reddit-research.streamlit.app" target="_blank">open the dashboard directly</a>.
-        </div>
-        <iframe
-            src="https://oaw-reddit-research.streamlit.app/?embedded=true"
-            class="dashboard-frame"
-            title="Skills-Based Hiring Sentiment Dashboard"
-            allow="clipboard-write"
-        ></iframe>
+    <div class="track" id="track">
 
-        <footer>
-            <p>Xavier Rivera &middot; <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research" style="color:#4C78A8; text-decoration:none;">View source on GitHub</a></p>
-        </footer>
+        <!-- 1: Title -->
+        <section class="panel panel-title">
+            <h1>Skills-Based Hiring Sentiment Analysis</h1>
+            <div class="meta">Xavier Rivera &mdash; Opportunity@Work &mdash; 2025</div>
+            <div class="scroll-hint">Scroll &rarr;</div>
+        </section>
+
+        <!-- 2: Overview -->
+        <section class="panel panel-overview">
+            <div class="col-heading">
+                <div class="label">Overview</div>
+                <h2>About This Project</h2>
+            </div>
+            <div class="col-body">
+                <p>As sole data generalist on this research initiative, I designed and executed the full project lifecycle: scoping the research question, building data collection infrastructure (Reddit API + Pushshift), developing a reproducible cleaning pipeline, and delivering an interactive dashboard for stakeholders.</p>
+                <p>The project analyzed public discourse across eight subreddits to map sentiment around skills-based hiring reform and its intersection with federal workforce changes.</p>
+            </div>
+        </section>
+
+        <!-- 3: Challenge -->
+        <section class="panel panel-challenge">
+            <div class="label">The Question</div>
+            <blockquote>How do federal employees, hiring managers, and career-changers talk about skills-based hiring reform on Reddit?</blockquote>
+        </section>
+
+        <!-- 4: Process -->
+        <section class="panel panel-process">
+            <div class="process-section">
+                <div class="label">Collection</div>
+                <h3>Data Pipeline</h3>
+                <p>Built dual-source collection using PRAW (Reddit API) for real-time data and Pushshift for historical depth. Targeted 8 subreddits spanning federal employment and career communities.</p>
+                <div class="tech-list">Python, PRAW, Pushshift, pandas</div>
+            </div>
+            <div class="process-section">
+                <div class="label">Analysis</div>
+                <h3>Cleaning &amp; Enrichment</h3>
+                <p>Documented cleaning pipeline with deduplication, missing value handling, and derived fields. Sentiment scoring via TextBlob with manual validation.</p>
+                <div class="stat-row">
+                    <div class="stat">
+                        <div class="stat-number">491</div>
+                        <div class="stat-label">Cleaned rows</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Subreddits</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3.5</div>
+                        <div class="stat-label">Years of data</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5: Work Samples -->
+        <section class="panel panel-samples">
+            <div class="samples-heading">
+                <div class="label">Deliverables</div>
+                <h2>Work Samples</h2>
+            </div>
+            <div class="sample-items">
+                <div class="sample-item">
+                    <div class="sample-num">01</div>
+                    <h4>Project Plan &amp; Task Tracker</h4>
+                    <p>10-week research plan with risk register and 23-task tracker across 4 workstreams.</p>
+                    <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/project_plan.md" target="_blank">View plan</a>
+                </div>
+                <div class="sample-item">
+                    <div class="sample-num">02</div>
+                    <h4>Survey Design</h4>
+                    <p>17-question teacher PD effectiveness survey with skip logic and SurveyMonkey implementation notes.</p>
+                    <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/survey/teacher_pd_survey.md" target="_blank">View survey</a>
+                </div>
+                <div class="sample-item">
+                    <div class="sample-num">03</div>
+                    <h4>Consent &amp; Incentive Tracking</h4>
+                    <p>IRB-aligned consent workflow and incentive distribution log with 15 tracked participants.</p>
+                    <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/operations/consent_tracking.md" target="_blank">View protocol</a>
+                </div>
+                <div class="sample-item">
+                    <div class="sample-num">04</div>
+                    <h4>Cleaned Dataset &amp; Dashboard</h4>
+                    <p>491-row cleaned dataset with data dictionary and interactive Streamlit dashboard.</p>
+                    <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research/blob/main/data/DATA_DICTIONARY.md" target="_blank">View dictionary</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6: Findings -->
+        <section class="panel panel-findings">
+            <div class="label">Key Findings</div>
+            <div class="finding">
+                <span class="finding-num">01</span>
+                <p>Sentiment toward skills-based hiring is broadly positive but drops sharply in RIF-adjacent threads, suggesting messaging needs to decouple hiring reform from workforce reductions.</p>
+            </div>
+            <div class="finding">
+                <span class="finding-num">02</span>
+                <p>r/FedEmployees and r/jobs drive the highest volume of discussion, making them priority channels for monitoring and engagement.</p>
+            </div>
+            <div class="finding">
+                <span class="finding-num">03</span>
+                <p>Mentions of "STARs" and "skills-based" have trended upward since mid-2023, indicating growing public awareness of Opportunity@Work's mission.</p>
+            </div>
+        </section>
+
+        <!-- 7: Dashboard CTA -->
+        <section class="panel panel-cta">
+            <h2>Explore the Data</h2>
+            <a href="https://oaw-reddit-research.streamlit.app" target="_blank" class="cta-link">View Live Dashboard</a>
+            <div class="cta-note">Password-protected &mdash; use the password shared with you</div>
+        </section>
+
+        <!-- 8: Footer -->
+        <section class="panel panel-footer">
+            <h2>Xavier Rivera</h2>
+            <div class="links">
+                <a href="/">Home</a>
+                <a href="https://github.com/xrivera-launchfrog" target="_blank">GitHub</a>
+                <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+                <a href="https://github.com/xrivera-launchfrog/oaw-reddit-research" target="_blank">View Source</a>
+            </div>
+        </section>
+
     </div>
+
+    <script>
+        (function() {
+            const track = document.getElementById('track');
+            const progress = document.getElementById('progress');
+            const panels = document.querySelectorAll('.panel');
+            const totalPanels = panels.length;
+
+            // Calculate total scrollable width
+            let totalWidth = 0;
+            panels.forEach(p => totalWidth += p.offsetWidth);
+            const maxScroll = totalWidth - window.innerWidth;
+
+            let currentX = 0;
+            let targetX = 0;
+            const speed = 1.2;
+
+            // Mobile check
+            if (window.innerWidth <= 768) return;
+
+            window.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                targetX += e.deltaY * speed;
+                targetX = Math.max(0, Math.min(targetX, maxScroll));
+                track.style.transform = 'translateX(' + (-targetX) + 'px)';
+
+                // Update progress
+                const pct = targetX / maxScroll;
+                const currentPanel = Math.min(totalPanels, Math.floor(pct * totalPanels) + 1);
+                const padded = String(currentPanel).padStart(2, '0');
+                progress.textContent = padded + ' / ' + String(totalPanels).padStart(2, '0');
+            }, { passive: false });
+
+            // Recalculate on resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 768) {
+                    track.style.transform = '';
+                    return;
+                }
+                let w = 0;
+                panels.forEach(p => w += p.offsetWidth);
+                // maxScroll is recalculated but since it's in closure,
+                // we need to update it properly
+            });
+
+            // Touch support for tablets
+            let touchStartX = 0;
+            let touchStartScroll = 0;
+            track.addEventListener('touchstart', function(e) {
+                touchStartX = e.touches[0].clientX;
+                touchStartScroll = targetX;
+            });
+            track.addEventListener('touchmove', function(e) {
+                if (window.innerWidth <= 768) return;
+                e.preventDefault();
+                const dx = touchStartX - e.touches[0].clientX;
+                targetX = Math.max(0, Math.min(touchStartScroll + dx, maxScroll));
+                track.style.transform = 'translateX(' + (-targetX) + 'px)';
+            }, { passive: false });
+        })();
+    </script>
+
 </body>
 </html>

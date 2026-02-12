@@ -4,70 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xavier Rivera</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        html { font-size: 10px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { color: #f62506; background: none; }
+        ::-moz-selection { color: #f62506; background: none; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #1a1a2e;
-            background: #fafafa;
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            line-height: 2.8rem;
+            color: #000;
+            background: #eadad0;
         }
-        .container { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
-        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
-        .subtitle { color: #555; font-size: 1.1rem; margin-bottom: 48px; }
-        h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 16px; color: #1a1a2e; }
-        .project-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 16px;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(0,0,0,0.3);
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        a:hover { opacity: 1; }
+
+        /* Nav */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #eadad0;
+            padding-top: 40px;
+        }
+        .nav-inner {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.6rem;
+        }
+        .nav-inner a { border: none; }
+        .nav-divider {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 12px auto 0;
+            border: none;
+            border-top: 1px solid rgba(0,0,0,0.5);
+        }
+        .nav-links { display: flex; gap: 16px; }
+
+        /* Hero */
+        .hero {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 60px auto 0;
+        }
+        .hero p { margin-bottom: 2.8rem; }
+        .hero strong { font-weight: 600; }
+
+        /* Projects */
+        .projects {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 80px auto;
+        }
+        .project {
+            display: block;
+            width: 790px;
+            max-width: 100%;
+            height: 300px;
+            border: 1px solid #000;
+            border-radius: 150px;
+            position: relative;
+            margin: 0 auto;
+            transition: width 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
             text-decoration: none;
             color: inherit;
-            display: block;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            opacity: 1;
         }
-        .project-card:hover {
-            border-color: #4C78A8;
-            box-shadow: 0 2px 8px rgba(76, 120, 168, 0.15);
+        .project:hover {
+            width: 850px;
         }
-        .project-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
-        .project-card p { color: #555; font-size: 0.95rem; }
-        .tags { margin-top: 10px; }
-        .tag {
-            display: inline-block;
-            background: #f0f2f6;
-            color: #444;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            margin-right: 6px;
+        .project-year {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Courier Prime', monospace;
+            font-style: italic;
+            font-size: 2.5rem;
+            opacity: 0.4;
+            transition: opacity 0.3s;
         }
-        footer { margin-top: 64px; color: #888; font-size: 0.85rem; }
-        footer a { color: #4C78A8; text-decoration: none; }
+        .project:hover .project-year { opacity: 0.2; }
+        .project-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+        }
+        .project-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .project-stack {
+            font-family: 'Courier Prime', monospace;
+            font-style: italic;
+            font-size: 1.3rem;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        .footer-divider {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 0 auto;
+            border: none;
+            border-top: 1px solid rgba(0,0,0,0.5);
+        }
+        footer {
+            max-width: 800px;
+            width: calc(100vw - 40px);
+            margin: 0 auto;
+            padding: 20px 0 180px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 1.5rem;
+        }
+        footer a { border: none; }
+        .footer-links { display: flex; gap: 16px; }
+
+        /* Mobile */
+        @media (max-width: 800px) {
+            .project {
+                width: calc(100vw - 40px);
+                height: 200px;
+                border-radius: 100px;
+            }
+            .project:hover { width: calc(100vw - 20px); }
+            .project-title { font-size: 1.6rem; }
+            .project-stack { font-size: 1.2rem; }
+            .hero { margin-top: 40px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Xavier Rivera</h1>
-        <p class="subtitle">Data Generalist &middot; Research Operations &middot; Analytics</p>
 
-        <h2>Projects</h2>
-        <a href="/projects/oaw-reddit-research/" class="project-card">
-            <h3>Skills-Based Hiring Sentiment Analysis</h3>
-            <p>Full-cycle research data initiative for Opportunity@Work: Reddit discourse analysis across 8 subreddits, interactive Streamlit dashboard, and research operations documentation.</p>
-            <div class="tags">
-                <span class="tag">Python</span>
-                <span class="tag">pandas</span>
-                <span class="tag">Streamlit</span>
-                <span class="tag">NLP</span>
-                <span class="tag">Research Ops</span>
+    <nav>
+        <div class="nav-inner">
+            <span style="opacity:0.5;">xavierrivera</span>
+            <div class="nav-links">
+                <a href="https://github.com/xrivera-launchfrog" target="_blank">GH</a>
+                <a href="https://linkedin.com/in/yourprofile" target="_blank">LI</a>
+            </div>
+        </div>
+        <hr class="nav-divider">
+    </nav>
+
+    <section class="hero">
+        <p>
+            My name is <strong>Xavier Rivera</strong>. I'm a data generalist and research operations specialist
+            working at the intersection of data analytics, program evaluation, and education policy.
+        </p>
+        <p>
+            Currently focused on building research infrastructure and
+            interactive data tools that help organizations make evidence-based decisions.
+            Always open to chat &mdash; feel free to
+            <a href="mailto:hello@xavierrivera.com">reach out via email</a>.
+        </p>
+    </section>
+
+    <section class="projects">
+        <a href="/projects/oaw-reddit-research/" class="project">
+            <span class="project-year">2025</span>
+            <div class="project-info">
+                <div class="project-title">Skills-Based Hiring Sentiment Analysis</div>
+                <div class="project-stack">Python, pandas, Streamlit, NLP, Research Ops</div>
             </div>
         </a>
+    </section>
 
-        <footer>
-            <p><a href="https://github.com/xrivera-launchfrog">GitHub</a> &middot; <a href="https://linkedin.com/in/yourprofile">LinkedIn</a></p>
-        </footer>
-    </div>
+    <hr class="footer-divider">
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/xrivera-launchfrog" target="_blank">GitHub</a>
+            <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+        </div>
+        <a href="mailto:hello@xavierrivera.com">hello@xavierrivera.com</a>
+    </footer>
+
 </body>
 </html>

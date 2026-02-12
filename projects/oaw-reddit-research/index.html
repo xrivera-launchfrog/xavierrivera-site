@@ -826,7 +826,7 @@ exports.init = init;
             const templateConfig = {
                 rememberExpirationKey: "staticrypt_expiration",
                 rememberPassphraseKey: "staticrypt_passphrase",
-                replaceHtmlCallback: null,
+                replaceHtmlCallback: function(p){var b=new Blob([p],{type:'text/html'});window.location.replace(URL.createObjectURL(b));},
                 clearLocalStorageCallback: null,
             };
 
